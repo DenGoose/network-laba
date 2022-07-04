@@ -93,17 +93,12 @@ class SubNet
 
 	protected function getMaskFor($classMask): string
 	{
-		$pos = 0;
-		$pointsNumber = 0;
-		if ($this->prefixSubNetPart > 8 && $classMask != '255')
+		if ($this->prefixSubNetPart > 8 && $classMask != '255.255.255')
 		{
 			$partNodePart = $this->prefixSubNetPart;
 			while ($partNodePart > 8)
 			{
-				if ($partNodePart > 8)
-				{
-					$classMask .= '.' . $this->maskCalculate(8);
-				}
+				$classMask .= '.' . $this->maskCalculate(8);
 				$partNodePart -= 8;
 			}
 			$classMask .= '.' . $this->maskCalculate($partNodePart);
