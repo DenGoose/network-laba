@@ -16,7 +16,7 @@ class SubNet
 	public function __construct(
 		protected string $ipClass,
 		protected int    $subnetCount,
-		protected int $computersNumber
+		protected int 	 $computersNumber
 	)
 	{
 		if (!in_array($this->ipClass, self::IP_CLASSES))
@@ -34,7 +34,7 @@ class SubNet
 
 		$powerOf2 = log($this->subnetCount) / log(2);
 
-		if ($this->subnetCount > 0 && $this->subnetCount < 1024 && ($powerOf2 / floor($powerOf2)) == 1)
+		if ($this->subnetCount > 0 && $this->subnetCount < 1024 && $powerOf2 > 0 && ($powerOf2 / floor($powerOf2)) == 1)
 		{
 			$this->prefixSubNetPart = (ceil($powerOf2)) + 1;
 		}
@@ -64,11 +64,14 @@ class SubNet
 	 */
 	public function calculate(): array
 	{
+		$one = str_repeat('1', $this->prefix);
+		$binary = $one . str_repeat('0', 32 - $this->prefix);
 		$result = [
 			'prefix' => $this->prefix,
 			'nodePart' => 32 - $this->prefix,
 			'nodeComputersNumber' => $this->nodeComputersNumber,
-			'class' => $this->ipClass
+			'class' => $this->ipClass,
+			'binary' => implode('.', str_split($binary, self::BYTE))
 		];
 
 		if ($this->computersNumber <= $this->nodeComputersNumber)
@@ -117,7 +120,7 @@ class SubNet
 		return implode('.', $arr);
 	}
 
-	protected function maskCalculate(int $numberBits, int $mask = 0)
+	protected function maskCalculate(int $numberBits, int $mask = 0): int
 	{
 		return $numberBits > 0 ?
 			$this->maskCalculate($numberBits - 1, $mask + pow(2, 8 - $numberBits)) :
